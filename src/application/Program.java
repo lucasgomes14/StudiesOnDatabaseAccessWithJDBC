@@ -47,53 +47,84 @@ public class Program {
 		 */
 		
 		// inserir dados!
+		/*
+		 * 
+		 * 
+		 * SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); // formatação da data
+		 * 
+		 * Connection conn = null;
+		 * 
+		 * PreparedStatement st = null;
+		 * 
+		 * try {
+		 * 	conn = DB.getConnection(); // conecta com o banco de dados
+		 * 	
+		 *  st = conn.prepareStatement( // instanciei para inserir os dados
+		 * 			"INSERT INTO seller "
+		 * 			+ "(Name, Email, BirthDate, BaseSalary, DepartmentId)"
+		 * 			+ "VALUES "
+		 * 			+ "(?, ?, ?, ?, ?)"); // modo de inserção normal
+		 * 	
+		 * 	st = conn.prepareStatement( // instaciei para a inserção de dados
+		 * 			"INSERT INTO seller "
+		 * 			+ "(Name, Email, BirthDate, BaseSalary, DepartmentId)"
+		 * 			+ "VALUES "
+		 * 			+ "(?, ?, ?, ?, ?)", 
+		 * 			Statement.RETURN_GENERATED_KEYS); // modo de inserção retornando o id dele
+		 * 			
+		 * 	
+		 * 	st.setString(1, "Carl Purple"); // trocando os interrogações por dados reais
+		 * 	st.setString(2, "carl@gmail.com");
+		 * 	st.setDate(3, new java.sql.Date(sdf.parse("22/04/1995").getTime())); // usar o date do sql
+		 * 	st.setDouble(4, 3000.00);
+		 * 	st.setInt(5, 4);
+		 * 	
+		 * 	 int rowsAffected = st.executeUpdate(); // executeUpdate para quando for alterar dados, que retorna um inteiro de quantos linhas foram alteradas
+		 * 	 
+		 * 	 if(rowsAffected > 0) {
+		 * 		 ResultSet rs = st.getGeneratedKeys(); // função que retorna um tipo ResultSet com o/s valor/es do id do novo dado
+		 * 		 
+		 * 		 while(rs.next()) {
+		 * 			 int id = rs.getInt(1); // retorna o valor da primeira coluna
+		 * 			 
+		 * 			 System.out.println("Done! Id = " + id);
+		 * 		 }
+		 * 	 } else {
+		 * 		 System.out.println("Done! Rows affected: " + rowsAffected);
+		 * 	 }
+		 * 	
+		 * } catch (SQLException e) {
+		 * 	e.printStackTrace(); // mostrar no console qual o erro
+	     * } catch (ParseException e) {
+		 * 	e.printStackTrace();
+		 * } finally {
+		 * 	DB.closeStatement(st);
+		 * 	DB.closeConnection();
+		 * }
+	*/
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); // formatação da data
+		// atualização de dados
 		
 		Connection conn = null;
 		
 		PreparedStatement st = null;
 		
 		try {
-			conn = DB.getConnection(); // conecta com o banco de dados
+			conn = DB.getConnection(); // conectando ao banco de dados
 			
-			/* st = conn.prepareStatement( // instanciei para inserir os dados
-					"INSERT INTO seller "
-					+ "(Name, Email, BirthDate, BaseSalary, DepartmentId)"
-					+ "VALUES "
-					+ "(?, ?, ?, ?, ?)");*/ // modo de inserção normal
+			st = conn.prepareStatement( // instanciando para atualizar dados
+					"UPDATE seller "
+					+ "SET BaseSalary = BaseSalary + ? "
+					+ "WHERE "
+					+ "(DepartmentId = ?)");
 			
-			st = conn.prepareStatement( // instaciei para a inserção de dados
-					"INSERT INTO seller "
-					+ "(Name, Email, BirthDate, BaseSalary, DepartmentId)"
-					+ "VALUES "
-					+ "(?, ?, ?, ?, ?)", 
-					Statement.RETURN_GENERATED_KEYS); // modo de inserção retornando o id dele
-					
+			st.setDouble(1, 200.);
+			st.setInt(2, 2);
 			
-			st.setString(1, "Carl Purple"); // trocando os interrogações por dados reais
-			st.setString(2, "carl@gmail.com");
-			st.setDate(3, new java.sql.Date(sdf.parse("22/04/1995").getTime())); // usar o date do sql
-			st.setDouble(4, 3000.00);
-			st.setInt(5, 4);
+			int rowsAffected = st.executeUpdate(); // atualizar dados e retorna quantas linhas afetadas
 			
-			 int rowsAffected = st.executeUpdate(); // executeUpdate para quando for alterar dados, que retorna um inteiro de quantos linhas foram alteradas
-			 
-			 if(rowsAffected > 0) {
-				 ResultSet rs = st.getGeneratedKeys(); // função que retorna um tipo ResultSet com o/s valor/es do id do novo dado
-				 
-				 while(rs.next()) {
-					 int id = rs.getInt(1); // retorna o valor da primeira coluna
-					 
-					 System.out.println("Done! Id = " + id);
-				 }
-			 } else {
-				 System.out.println("Done! Rows affected: " + rowsAffected);
-			 }
-			
+			System.out.println("Done! Rows affected: " + rowsAffected);
 		} catch (SQLException e) {
-			e.printStackTrace(); // mostrar no console qual o erro
-		} catch (ParseException e) {
 			e.printStackTrace();
 		} finally {
 			DB.closeStatement(st);
