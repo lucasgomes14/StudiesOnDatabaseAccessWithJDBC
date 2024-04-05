@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 
 import db.DB;
 import db.DbException;
+import db.DbIntegrityException;
 
 public class Program {
 
@@ -104,28 +105,54 @@ public class Program {
 	*/
 		
 		// atualização de dados
+		/*
+		 * 
+		 * Connection conn = null;
+		 * 
+		 * PreparedStatement st = null;
+		 * 
+		 * try {
+		 * 	conn = DB.getConnection(); // conectando ao banco de dados
+		 * 	
+		 * 	st = conn.prepareStatement( // instanciando para atualizar dados
+		 * 			"UPDATE seller "
+		 * 			+ "SET BaseSalary = BaseSalary + ? "
+		 * 			+ "WHERE "
+		 * 			+ "(DepartmentId = ?)");
+		 * 	
+		 * 	st.setDouble(1, 200.);
+		 * 	st.setInt(2, 2);
+		 * 	
+		 * 	int rowsAffected = st.executeUpdate(); // atualizar dados e retorna quantas linhas afetadas
+		 * 	
+		 * 	System.out.println("Done! Rows affected: " + rowsAffected);
+		 * } catch (SQLException e) {
+		 * 	e.printStackTrace();
+		 * } finally {
+		 * 	DB.closeStatement(st);
+		 * 	DB.closeConnection();
+		 * }
+		*/
 		
+		// deletar dados
 		Connection conn = null;
 		
 		PreparedStatement st = null;
 		
 		try {
-			conn = DB.getConnection(); // conectando ao banco de dados
-			
-			st = conn.prepareStatement( // instanciando para atualizar dados
-					"UPDATE seller "
-					+ "SET BaseSalary = BaseSalary + ? "
+			conn = DB.getConnection();
+			st = conn.prepareStatement(
+					"DELETE FROM department "
 					+ "WHERE "
-					+ "(DepartmentId = ?)");
+					+ "Id = ?");
 			
-			st.setDouble(1, 200.);
-			st.setInt(2, 2);
+			st.setInt(1, 2);
 			
-			int rowsAffected = st.executeUpdate(); // atualizar dados e retorna quantas linhas afetadas
+			int rowsAffected = st.executeUpdate();
 			
 			System.out.println("Done! Rows affected: " + rowsAffected);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DbIntegrityException(e.getMessage());
 		} finally {
 			DB.closeStatement(st);
 			DB.closeConnection();
