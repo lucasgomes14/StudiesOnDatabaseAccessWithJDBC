@@ -135,24 +135,66 @@ public class Program {
 		*/
 		
 		// deletar dados
-		Connection conn = null;
+		/*
+		 * 
+		 * 
+		 * Connection conn = null;
+		 * 
+		 * PreparedStatement st = null;
+		 * 
+		 * try {
+		 * 	conn = DB.getConnection();
+		 * 	st = conn.prepareStatement(
+		 * 			"DELETE FROM department "
+		 * 			+ "WHERE "
+		 * 			+ "Id = ?");
+		 * 	
+		 * 	st.setInt(1, 2);
+		 * 	
+		 * 	int rowsAffected = st.executeUpdate();
+		 * 	
+		 * 	System.out.println("Done! Rows affected: " + rowsAffected);
+		 * } catch (SQLException e) {
+		 * 	throw new DbIntegrityException(e.getMessage());
+		 * } finally {
+		 * 	DB.closeStatement(st);
+		 * 	DB.closeConnection();
+		 * }
+		 * 
+		 */
 		
-		PreparedStatement st = null;
+		// transação
+		Connection conn = null;
+		Statement st = null;
 		
 		try {
 			conn = DB.getConnection();
-			st = conn.prepareStatement(
-					"DELETE FROM department "
-					+ "WHERE "
-					+ "Id = ?");
 			
-			st.setInt(1, 2);
+			conn.setAutoCommit(false); // não é para confirmar as operações automaticamente
 			
-			int rowsAffected = st.executeUpdate();
+			st = conn.createStatement();
 			
-			System.out.println("Done! Rows affected: " + rowsAffected);
-		} catch (SQLException e) {
-			throw new DbIntegrityException(e.getMessage());
+			int rows1 = st.executeUpdate("UPDATE seller SET BaseSalary = 2090 WHERE DepartmentId = 1");
+			// int x = 1;
+			
+			// if(x < 2) {
+			// 	throw new SQLException("Fake error!");
+			// }
+			
+			int rows2 = st.executeUpdate("UPDATE seller SET BaseSalary = 3090 WHERE DepartmentId = 2");
+			
+			conn.commit(); // confirmar as operações, logo o bloco entre setAutoCommit e commit está seguro
+			
+			System.out.println("Rows1 " + rows1);
+			System.out.println("Rows2 " + rows2);
+			
+		} catch(SQLException e) {
+			try {
+				conn.rollback();// voltar ao estado inicial do banco 
+				throw new DbException("Transaction rolled back! Caused by: " + e.getMessage());
+			} catch (SQLException e1) {
+				throw new DbException("Error trying to rollback! Caused by: " + e1.getMessage());
+			}
 		} finally {
 			DB.closeStatement(st);
 			DB.closeConnection();
